@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاختبار</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">🌍 تعلم اللغات</div>
+            <div style="display:flex;gap:1rem;color:white;">
+                <a href="dashboard.html" style="color:white;text-decoration:none;">العودة</a>
+                <button onclick="logout()" class="btn btn-outline">خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width:600px;margin:2rem auto;">
+        <div id="quizContainer">
+            <h2 id="questionText"></h2>
+            <div style="margin:2rem 0;">
+                <p style="color:#666;margin-bottom:1rem;">السؤال <span id="questionNum">1</span> من <span id="totalQuestions">0</span></p>
+                <div id="optionsContainer" class="exercise-options"></div>
+            </div>
+            <div style="display:flex;gap:1rem;margin:2rem 0;">
+                <button onclick="submitQuiz()" class="btn btn-primary" style="flex:1;">إنهاء الاختبار</button>
+            </div>
+        </div>
+        
+        <div id="resultsContainer" style="display:none;text-align:center;">
+            <h2>📊 النتائج</h2>
+            <div style="margin:2rem 0;">
+                <div style="font-size:3rem;font-weight:bold;color:var(--primary);" id="scoreDisplay">0</div>
+                <p style="font-size:1.2rem;color:#666;margin-top:1rem;" id="scoreMessage"></p>
+            </div>
+            <div style="background:var(--light);padding:1.5rem;border-radius:8px;margin:2rem 0;">
+                <p>الإجابات الصحيحة: <strong id="correctCount">0</strong>/<strong id="totalCount">0</strong></p>
+            </div>
+            <a href="dashboard.html" class="btn btn-primary" style="display:inline-block;margin-top:1rem;">العودة للدشبورد</a>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 منصة تعلم اللغات</p></footer>
+
+    <script src="auth.js"></script>
+    <script>
+        const langId = new URLSearchParams(window.location.search).get('lang');
+        let questions = [];
+        let currentQuestion = 0;
+        let answers = {};
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const res = await fetch('/api/quiz?language_id=' + langId);
+            const response = await res.json();
+            questions = response.data || response;
+            
+            document.getElementById('totalQuestions').textContent = questions.length;
+            if(questions.length > 0) {
+                displayQuestion();
+            } else {
+                document.getElementById('quizContainer').innerHTML = '<p>لا توجد أسئلة متوفرة</p>';
+            }
+        });
+        
+        function displayQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('questionNum').textContent = currentQuestion + 1;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => {
+                    document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    answers[currentQuestion] = opt;
+                };
+                
+                if(answers[currentQuestion] === opt) {
+                    div.classList.add('selected');
+                }
+                container.appendChild(div);
+            });
+        }
+        
+        async function submitQuiz() {
+            if(Object.keys(answers).length === 0) {
+                alert('يرجى الإجابة على الأسئلة');
+                return;
+            }
+            
+            const res = await fetch('/api/quiz/submit', {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ language_id: langId, answers })
+            });
+            
+            if(res.ok) {
+                const result = await res.json();
+                showResults(result);
+            }
+        }
+        
+        function showResults(result) {
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('scoreDisplay').textContent = result.score.toFixed(1) + '%';
+            document.getElementById('correctCount').textContent = result.correct;
+            document.getElementById('totalCount').textContent = result.total;
+            
+            let message = 'جيد جداً! 🎉';
+            if(result.score < 50) message = 'حاول مرة أخرى! 💪';
+            else if(result.score < 75) message = 'ممتاز! 👏';
+            else if(result.score < 90) message = 'رائع جداً! 🌟';
+            else message = 'مثالي! 🏆';
+            
+            document.getElementById('scoreMessage').textContent = message;
+        }
+    </script>
+</body>
+</html>

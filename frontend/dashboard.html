@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">🌍 تعلم اللغات</div>
+            <div style="display:flex;gap:1rem;align-items:center;color:white;">
+                <span>مرحباً <span id="userName"></span></span>
+                <button onclick="logout()" class="btn btn-outline">خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>📊 لوحة التحكم</h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="lessonCount">0</div>
+                    <div class="stat-label">دروس مكتملة</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="scoreAvg">0%</div>
+                    <div class="stat-label">متوسط النتائج</div>
+                </div>
+            </div>
+        </div>
+
+        <section style="margin:3rem 0;">
+            <h2>اختر لغة للتعلم</h2>
+            <div id="languagesGrid" class="languages-grid" style="margin-top:2rem;">
+                <div class="loading">جاري التحميل...</div>
+            </div>
+        </section>
+
+        <section style="margin:3rem 0;">
+            <h2 id="lessonsTitle" style="display:none;">📚 الدروس</h2>
+            <div id="lessonsGrid" class="lessons-grid" style="margin-top:2rem;display:none;">
+                <div class="loading">اختر لغة</div>
+            </div>
+        </section>
+
+        <section style="margin:3rem 0;">
+            <h2 id="vocabTitle" style="display:none;">📖 القاموس</h2>
+            <div style="display:flex;gap:1rem;margin-bottom:1rem;display:none;" id="vocabControls">
+                <select id="categoryFilter" onchange="filterVocab()" style="padding:0.75rem;border-radius:8px;border:1px solid var(--border);">
+                    <option value="">جميع الفئات</option>
+                    <option value="Greetings">التحيات</option>
+                    <option value="Polite expressions">التعابير المهذبة</option>
+                    <option value="Numbers">الأرقام</option>
+                    <option value="Family">العائلة</option>
+                    <option value="Colors">الألوان</option>
+                    <option value="Animals">الحيوانات</option>
+                </select>
+            </div>
+            <div id="vocabGrid" class="vocabulary-grid" style="margin-top:2rem;display:none;">
+                <div class="loading">جاري التحميل...</div>
+            </div>
+        </section>
+
+        <section style="margin:3rem 0;">
+            <h2 id="exTitle" style="display:none;">🎯 التمارين</h2>
+            <div id="exGrid" class="exercises-grid" style="margin-top:2rem;display:none;">
+                <div class="loading">جاري التحميل...</div>
+            </div>
+        </section>
+    </div>
+
+    <footer><p>&copy; 2026 منصة تعلم اللغات</p></footer>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

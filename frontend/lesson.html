@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدرس</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">🌍 تعلم اللغات</div>
+            <div style="display:flex;gap:1rem;color:white;">
+                <a href="dashboard.html" style="color:white;text-decoration:none;">العودة</a>
+                <button onclick="logout()" class="btn btn-outline">خروج</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="margin:2rem 0;">
+            <h2 id="lessonTitle"></h2>
+            <div style="background:var(--light);padding:1rem;border-radius:8px;margin:1.5rem 0;min-height:200px;max-height:400px;overflow-y:auto;">
+                <div id="lessonContent"></div>
+            </div>
+            <div style="margin-top:2rem;padding:1rem;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;border-radius:8px;text-align:center;">
+                <div style="font-size:0.9rem;opacity:0.9;">💡 نصيحة اليوم</div>
+                <div style="font-size:1.1rem;margin-top:0.5rem;" id="dailyTip">تعلم بانتظام لتحقيق أفضل النتائج</div>
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:2rem;">
+                <button onclick="goToDashboard()" class="btn btn-outline" style="flex:1;">العودة للدروس</button>
+                <button onclick="completeLesson()" class="btn btn-primary" style="flex:1;">إكمال الدرس ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 منصة تعلم اللغات</p></footer>
+
+    <script src="auth.js"></script>
+    <script>
+        const lessonId = new URLSearchParams(window.location.search).get('id');
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const res = await fetch('/api/lessons/' + lessonId);
+            if(res.ok) {
+                const lesson = await res.json();
+                document.getElementById('lessonTitle').textContent = lesson.title;
+                document.getElementById('lessonContent').innerHTML = (lesson.content || 'لا يوجد محتوى متوفر').replace(/\n/g, '<br>');
+            }
+        });
+        
+        async function completeLesson() {
+            const res = await fetch('/api/progress', {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ lesson_id: lessonId, completed: true })
+            });
+            if(res.ok) {
+                alert('✅ تم إكمال الدرس بنجاح!');
+                window.location.href = 'dashboard.html';
+            }
+        }
+        
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
