@@ -40,13 +40,28 @@
     <script>
         const lessonId = new URLSearchParams(window.location.search).get('id');
         
+        async function goToDashboard() { window.location.href = 'dashboard.html'; }
+        async function completeLesson() { 
+            try {
+                const res = await fetch(API_BASE_URL + '/api/progress', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({lesson_id: parseInt(lessonId)})
+                });
+                if(res.ok) alert('✅ تم إكمال الدرس!');
+            } catch(e) { alert('خطأ: ' + e.message); }
+        }
+        
         document.addEventListener('DOMContentLoaded', async () => {
-            const res = await fetch('/api/lessons/' + lessonId);
-            if(res.ok) {
-                const lesson = await res.json();
-                document.getElementById('lessonTitle').textContent = lesson.title;
-                document.getElementById('lessonContent').innerHTML = (lesson.content || 'لا يوجد محتوى متوفر').replace(/\n/g, '<br>');
-            }
+            try {
+                const res = await fetch(API_BASE_URL + '/api/lessons/' + lessonId);
+                if(res.ok) {
+                    const data = await res.json();
+                    const lesson = data.data || data;
+                    document.getElementById('lessonTitle').textContent = lesson.title;
+                    document.getElementById('lessonContent').innerHTML = '<h3>' + (lesson.pronunciation || '') + '</h3>' + (lesson.content || 'لا يوجد محتوى متوفر').replace(/\n/g, '<br>');
+                }
+            } catch(e) { console.error(e); }
         });
         
         async function completeLesson() {

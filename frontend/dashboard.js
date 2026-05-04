@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function loadProfile() {
-    const res = await fetch('/api/user/profile', { headers: getHeaders() });
+    const res = await fetch(API_BASE_URL + '/api/user/profile', { headers: getHeaders() });
     if(res.ok) {
         const response = await res.json();
         const data = response.data || response;
@@ -27,7 +27,7 @@ async function loadProfile() {
 }
 
 async function loadLanguages() {
-    const res = await fetch('/api/languages');
+    const res = await fetch(API_BASE_URL + '/api/languages');
     const response = await res.json();
     const languages = response.data || response;
     const grid = document.getElementById('languagesGrid');
@@ -62,7 +62,7 @@ async function selectLanguage(langId) {
 }
 
 async function loadLessons(langId) {
-    const res = await fetch('/api/lessons?language_id=' + langId);
+    const res = await fetch(API_BASE_URL + '/api/lessons?language_id=' + langId);
     const response = await res.json();
     allLessons = response.data || response;
     
@@ -83,7 +83,7 @@ async function loadLessons(langId) {
 }
 
 async function loadVocab(langId) {
-    const res = await fetch('/api/vocabulary?language_id=' + langId);
+    const res = await fetch(API_BASE_URL + '/api/vocabulary?language_id=' + langId);
     const response = await res.json();
     allVocab = response.data || response;
     
@@ -118,7 +118,7 @@ function filterVocab() {
 }
 
 async function loadExercises(langId) {
-    const res = await fetch('/api/exercises?language_id=' + langId);
+    const res = await fetch(API_BASE_URL + '/api/exercises?language_id=' + langId);
     const response = await res.json();
     const exercises = response.data || response;
     
@@ -141,7 +141,7 @@ async function loadExercises(langId) {
 
 async function submitExercise(exId, idx) {
     const answer = document.getElementById('answer' + idx).value;
-    const res = await fetch('/api/exercises/submit', {
+    const res = await fetch(API_BASE_URL + '/api/exercises/submit', {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({ exercise_id: exId, answer })

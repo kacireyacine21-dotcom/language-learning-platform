@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById('languagesGrid');
     try {
-        const res = await fetch('/api/languages');
+        const res = await fetch(API_BASE_URL + '/api/languages');
         const response = await res.json();
         const languages = response.data || response;
         grid.innerHTML = '';

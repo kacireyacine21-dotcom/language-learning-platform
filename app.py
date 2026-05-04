@@ -355,6 +355,21 @@ def get_lessons():
         logger.error(f'Get lessons error: {str(e)}')
         return jsonify({'success': False}), 500
 
+@app.route('/api/lessons/<int:id>', methods=['GET'])
+def get_lesson(id):
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute('SELECT * FROM lessons WHERE id = ?', (id,))
+        lesson = cursor.fetchone()
+        close_db(db)
+        if not lesson:
+            return jsonify({'success': False, 'message': 'Lesson not found'}), 404
+        return jsonify({'success': True, 'data': dict(lesson)}), 200
+    except Exception as e:
+        logger.error(f'Get lesson error: {str(e)}')
+        return jsonify({'success': False}), 500
+
 @app.route('/api/vocabulary', methods=['GET'])
 def get_vocabulary():
     try:

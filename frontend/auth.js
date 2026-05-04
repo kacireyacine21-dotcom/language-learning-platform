@@ -1,3 +1,5 @@
+const API_BASE_URL = 'http://localhost:5000';
+
 function getToken() { return localStorage.getItem('token'); }
 function getUser() { return JSON.parse(localStorage.getItem('user') || '{}'); }
 function isLoggedIn() { return !!getToken(); }
