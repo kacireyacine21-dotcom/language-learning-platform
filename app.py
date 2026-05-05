@@ -312,7 +312,7 @@ def login():
         close_db(db)
         if not user or not bcrypt.checkpw(password.encode('utf-8'), user['password_hash']):
             return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
-        token = jwt.encode({'user_id': user['id'], 'exp': datetime.utcnow() + timedelta(days=7)}, 
+        token = jwt.encode({'user_id': user['id'], 'exp': datetime.now() + timedelta(days=7)}, 
                           app.config['SECRET_KEY'], algorithm='HS256')
         logger.info(f'Login successful: {email}')
         return jsonify({'success': True, 'token': token, 'user': {'id': user['id'], 'name': user['name'], 'email': user['email']}}), 200
