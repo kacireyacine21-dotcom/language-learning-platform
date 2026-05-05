@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:5000';
+// استخدم عنوان IP الفعلي بدلاً من localhost للسماح بالوصول من الأجهزة الأخرى
+const API_BASE_URL = window.location.protocol + '//' + window.location.hostname + ':5000';
 
 function getToken() { return localStorage.getItem('token'); }
 function getUser() { return JSON.parse(localStorage.getItem('user') || '{}'); }
