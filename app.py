@@ -325,18 +325,47 @@ def get_languages():
     try:
         db = get_db()
         cursor = db.cursor()
-        cursor.execute('''SELECT l.*, COUNT(DISTINCT les.id) as lesson_count,
-                         COUNT(DISTINCT v.id) as vocab_count, COUNT(DISTINCT e.id) as exercise_count
-                         FROM languages l LEFT JOIN lessons les ON l.id = les.language_id
-                         LEFT JOIN vocabulary v ON l.id = v.language_id
-                         LEFT JOIN pronunciation_exercises e ON l.id = e.language_id
-                         GROUP BY l.id ORDER BY l.id''')
-        langs = [dict(row) for row in cursor.fetchall()]
-        close_db(db)
-        return jsonify({'success': True, 'data': langs}), 200
+        try:
+            cursor.execute('''SELECT l.*, COUNT(DISTINCT les.id) as lesson_count,
+                             COUNT(DISTINCT v.id) as vocab_count, COUNT(DISTINCT e.id) as exercise_count
+                             FROM languages l LEFT JOIN lessons les ON l.id = les.language_id
+                             LEFT JOIN vocabulary v ON l.id = v.language_id
+                             LEFT JOIN pronunciation_exercises e ON l.id = e.language_id
+                             GROUP BY l.id ORDER BY l.id''')
+            langs = [dict(row) for row in cursor.fetchall()]
+            close_db(db)
+            if not langs:
+                logger.warning('No languages found - reinitializing database')
+                init_db()
+                db = get_db()
+                cursor = db.cursor()
+                cursor.execute('''SELECT l.*, COUNT(DISTINCT les.id) as lesson_count,
+                                 COUNT(DISTINCT v.id) as vocab_count, COUNT(DISTINCT e.id) as exercise_count
+                                 FROM languages l LEFT JOIN lessons les ON l.id = les.language_id
+                                 LEFT JOIN vocabulary v ON l.id = v.language_id
+                                 LEFT JOIN pronunciation_exercises e ON l.id = e.language_id
+                                 GROUP BY l.id ORDER BY l.id''')
+                langs = [dict(row) for row in cursor.fetchall()]
+                close_db(db)
+            return jsonify({'success': True, 'data': langs}), 200
+        except Exception as inner_e:
+            logger.error(f'Query error: {str(inner_e)}')
+            close_db(db)
+            init_db()
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute('''SELECT l.*, COUNT(DISTINCT les.id) as lesson_count,
+                             COUNT(DISTINCT v.id) as vocab_count, COUNT(DISTINCT e.id) as exercise_count
+                             FROM languages l LEFT JOIN lessons les ON l.id = les.language_id
+                             LEFT JOIN vocabulary v ON l.id = v.language_id
+                             LEFT JOIN pronunciation_exercises e ON l.id = e.language_id
+                             GROUP BY l.id ORDER BY l.id''')
+            langs = [dict(row) for row in cursor.fetchall()]
+            close_db(db)
+            return jsonify({'success': True, 'data': langs}), 200
     except Exception as e:
         logger.error(f'Get languages error: {str(e)}')
-        return jsonify({'success': False}), 500
+        return jsonify({'success': False, 'message': str(e), 'data': []}), 500
 
 @app.route('/api/lessons', methods=['GET'])
 def get_lessons():
