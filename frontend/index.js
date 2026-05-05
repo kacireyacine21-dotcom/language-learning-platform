@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const grid = document.getElementById('languagesGrid');
     try {
         const res = await fetch(API_BASE_URL + '/api/languages');
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const response = await res.json();
-        const languages = response.data || response;
+        const languages = Array.isArray(response) ? response : (response.data || []);
+        if (!Array.isArray(languages)) throw new Error('Languages is not an array');
         grid.innerHTML = '';
         languages.forEach(lang => {
             const card = document.createElement('div');
