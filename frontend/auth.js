@@ -1,5 +1,7 @@
-// استخدم عنوان IP الفعلي بدلاً من localhost للسماح بالوصول من الأجهزة الأخرى
-const API_BASE_URL = window.location.protocol + '//' + window.location.hostname + ':5000';
+// استخدم عنوان الخادم الديناميكي - يعمل على localhost:5000 والـ Render
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000' 
+    : window.location.origin;
 
 function getToken() { return localStorage.getItem('token'); }
 function getUser() { return JSON.parse(localStorage.getItem('user') || '{}'); }
