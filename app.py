@@ -36,6 +36,13 @@ DATABASE = DB_PATH
 # ===================== Database Functions =====================
 
 def get_db():
+    # Ensure database directory exists
+    db_dir = os.path.dirname(DATABASE)
+    if db_dir and not os.path.exists(db_dir):
+        try:
+            os.makedirs(db_dir, exist_ok=True)
+        except:
+            pass
     db = sqlite3.connect(DATABASE)
     db.row_factory = sqlite3.Row
     return db
