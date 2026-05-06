@@ -1,7 +1,17 @@
-// استخدم عنوان الخادم الديناميكي - يعمل على localhost:5000 والـ Render
-const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000' 
-    : window.location.origin;
+// استخدم عنوان الخادم الديناميكي - يعمل على localhost:5000، الشبكة المحلية، والـ Render
+const hostname = window.location.hostname;
+let API_BASE_URL;
+
+if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    // Local development
+    API_BASE_URL = 'http://localhost:5000';
+} else if (hostname.includes('.onrender.com') || hostname.includes('.com')) {
+    // Production (Render or external)
+    API_BASE_URL = window.location.origin;
+} else {
+    // Local network access (e.g., 192.168.1.6)
+    API_BASE_URL = `http://${hostname}:5000`;
+}
 
 function getToken() { return localStorage.getItem('token'); }
 function getUser() { return JSON.parse(localStorage.getItem('user') || '{}'); }
